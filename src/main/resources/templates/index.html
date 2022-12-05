@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/index.css"/>
+    <!-- vue -->
+    <script src="/js/vue.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.zhimg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.zhimg.com/element-ui/lib/index.js"></script>
+    <!-- axios -->
+    <script src="/js/axios.js"></script>
+</head>
+<body>
+<div id="root">
+    <div class="box" style="margin-left: 40%;margin-top: 5%">
+        <h2>管理员</h2>
+        <div class="input-box">
+            <label>账号</label>
+            <input type="text" v-model="from.userAccount"/>
+        </div>
+        <div class="input-box">
+            <label>密码</label>
+            <input type="password" v-model="from.userPassword"/>
+        </div>
+        <div class="btn-box">
+            <a href="#">重置</a>
+            <div style="margin-left: 25%">
+                <button v-on:click="login()">登录</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="application/javascript">
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            from:{
+                userAccount:null,
+                userPassword:null
+            }
+        },
+        methods: {
+            login:function (){
+                axios.post("/login",this.from).then(res=>{
+                    console.log(res.data)
+                    if (res.data===true){
+                        window.location.replace("/admin")
+
+                    }
+                })
+            }
+        },
+    });
+</script>
+</body>
+</html>

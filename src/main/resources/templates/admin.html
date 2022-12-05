@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理界面</title>
+
+    <script src="/js/vue.js"></script>
+    <script src="/js/axios.js"></script>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.js"></script>
+    <!-- 引入样式 -->
+    <link href="https://unpkg.zhimg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.zhimg.com/element-ui/lib/index.js"></script>
+    <style>
+        a{
+            text-decoration:none;
+            color:inherit;
+        }
+    </style>
+</head>
+<body style="display: block">
+<div id="root" style="height: 100%">
+    <el-container style=" border: 1px solid #eee ;height: 100%">
+        <el-aside width="200px" style="background-color: rgb(238, 241, 246) ;height: 100%">
+            <div th:insert="commonPage::#Aside"></div>
+
+        </el-aside>
+        <el-container>
+
+            <el-main>
+                <el-card style="height: 100%">
+                    <el-table :data="form"
+                              v-loading="loading"
+                              fit="true"
+
+                    >
+                        <el-table-column prop="id" label="id" width="140">
+                        </el-table-column>
+                        <el-table-column prop="studentNo" label="学号" width="140">
+                        </el-table-column>
+                        <el-table-column prop="studentName" label="姓名" width="120">
+                        </el-table-column>
+                        <el-table-column prop="studentSex" label="性别">
+                            <template slot-scope="scope">
+                                {{scope.row.studentSex==1?"男":"女"}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="studentStartYear" label="开始学年">
+
+                        </el-table-column>
+                        <el-table-column prop="studentEndYear" label="毕业学年">
+
+                        </el-table-column>
+                        <el-table-column prop="studentNation" label="民族">
+
+                        </el-table-column>
+                        <el-table-column prop="studentCollege" label="学院">
+
+                        </el-table-column>
+
+                        <el-table-column prop="studentMajor" label="专业">
+
+                        </el-table-column>
+                        <el-table-column prop="studentType" label="类型">
+
+                        </el-table-column>
+
+                        <el-table-column
+                                label="操作"
+                                style="width: 50px"
+                        >
+                            <template slot-scope="scope">
+                                <el-button
+                                        v-on:click="editUse(scope.row)"
+                                >
+                                    编辑
+                                </el-button>
+
+                                <el-button
+                                        v-on:click="delUser(scope.row.user_id,scope.$index)"
+                                        type="danger"
+                                        v-bind:name=scope.$index
+                                >
+                                    移除
+                                </el-button>
+                                <el-dialog :append-to-body="true" :visible.sync="dialogVisible" title="修改信息" width="20%">
+                                    <el-form>
+
+                                        <el-form-item label="学号">
+                                            <el-input v-model="formData.studentNo"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="姓名">
+                                            <el-input v-model="formData.studentName"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="性别">
+                                            <el-input v-model="formData.studentSex"></el-input>
+                                            <!--                                        这里写死-->
+                                        </el-form-item>
+                                        <el-form-item label="民族">
+                                            <el-input v-model="formData.studentNation"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="部门">
+                                            <el-input v-model="formData.studentCollege"></el-input>
+                                        </el-form-item>
+
+                                        <el-form-item label="专业">
+                                            <el-input v-model="formData.studentMajor"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="类型">
+                                            <el-input v-model="formData.studentType"></el-input>
+                                        </el-form-item>
+
+                                        <div>
+                                            <el-button type="warning" v-on:click="dialogVisible=false">返回</el-button>
+                                            <el-button type="primary" v-on:click="updataUser()">确定</el-button>
+                                        </div>
+                                    </el-form>
+                                </el-dialog>
+
+                                <el-dialog :append-to-body="true" :visible.sync="dialogVisible2" title="添加信息" width="30%">
+                                    <el-form>
+                                        <el-form-item label="学号">
+                                            <el-input v-model="formData.studentNo"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="姓名">
+                                            <el-input v-model="formData.studentName"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="性别">
+                                            <el-input v-model="formData.studentSex"></el-input>
+                                            <!--                                        这里写死-->
+                                        </el-form-item>
+                                        <el-form-item label="民族">
+                                            <el-input v-model="formData.studentNation"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="部门">
+                                            <el-input v-model="formData.studentCollege"></el-input>
+                                        </el-form-item>
+
+                                        <el-form-item label="专业">
+                                            <el-input v-model="formData.studentMajor"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="类型">
+                                            <el-input v-model="formData.studentType"></el-input>
+                                        </el-form-item>
+
+
+                                        <div>
+                                            <el-button type="warning" v-on:click="dialogVisible2=false">返回</el-button>
+                                            <el-button type="primary" v-on:click="addUser()">确定</el-button>
+                                        </div>
+                                    </el-form>
+                                </el-dialog>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column
+                                align="right">
+                            <template slot="header">
+                                <el-button
+                                        type="success"
+                                        v-on:click="dialogVisible2=true"
+                                >添加
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                            background
+                            :page-size="page.pageSize"
+                            layout="prev, pager, next,total"
+                            @current-change="listPageLoard"
+                            :total="page.pageTotal"
+                            :page-count="page.pageTotal"
+                            style="float: right ; margin: 10px"
+                    >
+                    </el-pagination>
+                </el-card>
+
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+
+
+<script type="application/javascript">
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            dialogVisible2:false,
+            dialogVisible:false,
+            isCollapse: false,
+            value: '',
+            form:[],
+            formData:{
+                id:null,
+                studentNo:null,
+                studentName:null,
+                studentSex:null,
+                studentStartYear:null,
+                studentEndYear:null,
+                studentNation:null,
+                studentCollege:null,
+                studentMajor:null,
+                studentType:null
+            },
+            page:{
+                pageNum:null,
+                pageTotal:null,
+                pageSize:null,
+            },
+            start:1
+
+        },
+        methods: {
+            listPageLoard:function (page){
+                axios.get("/getListPage",{params: {start:page}})
+                    .then(res=>{
+                        this.form=res.data
+                })
+            },
+
+
+        },
+        created(){
+            axios.post("/getInitPage").then(res=>{
+                this.page=res.data;
+            })
+
+
+            axios.get("/getListPage",{params:{
+                start:1
+                }}).then(res=>{
+                console.log(res.data);
+                this.form=res.data
+
+
+                // for (let i =0;i<res.data.length;i++){
+                //     this.form.push(res.data[i]);
+                // }
+
+                // form:[{
+                //     studentNo:null,
+                //     studentName:null,
+                //     studentSex:null,
+                //     studentStartYear:null,
+                //     studentEndYear:null,
+                //     studentNation:null,
+                //     studentCollege:null,
+                //     studentMajor:null,
+                //     studentType:null
+                // }],
+            })
+        }
+    });
+</script>
+</body>
+</html>

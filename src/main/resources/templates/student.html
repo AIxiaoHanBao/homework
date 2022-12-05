@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>学生</title>
+
+    <script src="/js/vue.js"></script>
+    <script src="/js/axios.js"></script>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.js"></script>
+    <!-- 引入样式 -->
+    <link href="https://unpkg.zhimg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.zhimg.com/element-ui/lib/index.js"></script>
+    <style>
+        a{
+            text-decoration:none;
+            color:inherit;
+        }
+    </style>
+</head>
+<body style="display: block">
+<div id="root" style="height: 100%">
+    <el-container style=" border: 1px solid #eee ;height: 100%">
+        <el-aside width="200px" style="background-color: rgb(238, 241, 246) ;height: 100%">
+            <div th:insert="commonPage::#Aside"></div>
+
+        </el-aside>
+        <el-container>
+
+            <el-main>
+                <el-card style="height: 100%">
+                    <el-table :data="form"
+                              v-loading="loading"
+                              fit="true"
+                    >
+                        <el-table-column prop="id" label="id" width="140">
+                        </el-table-column>
+
+                        <el-table-column prop="studentNo" label="学号" width="140">
+                        </el-table-column>
+                        <el-table-column prop="studentName" label="姓名" width="120">
+                        </el-table-column>
+                        <el-table-column prop="courseName" label="课程名">
+                        </el-table-column>
+                        <el-table-column prop="studentScore" label="成绩">
+                            <template slot-scope="scope">
+                                {{scope.row.studentScore!==null?scope.row.studentScore:"待录入"}}
+                            </template>
+                        </el-table-column>
+
+
+                        <el-table-column
+                                label="操作"
+                                style="width: 50px"
+                        >
+                            <template slot-scope="scope">
+                                <el-button
+                                        v-on:click="editUse(scope.row)"
+                                        v-if="scope.row.studentScore===null"
+                                >
+                                    录入成绩
+                                </el-button>
+
+                                <el-button
+                                        v-on:click="delUser(scope.row.user_id,scope.$index)"
+                                        type="danger"
+                                        v-bind:name=scope.$index
+                                >
+                                    移除
+                                </el-button>
+                                <el-dialog :append-to-body="true" :visible.sync="dialogVisible" title="录入成绩" width="20%">
+                                    <el-form>
+                                        <el-form-item label="id">
+                                            <el-input v-model="formData.id" disabled="false"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="学号">
+                                            <el-input v-model="formData.studentNo" disabled="false"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="姓名">
+                                            <el-input v-model="formData.studentName" disabled="false"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="课程名">
+                                            <el-input v-model="formData.courseName" disabled="false"></el-input>
+                                            <!--                                        这里写死-->
+                                        </el-form-item>
+                                        <el-form-item label="成绩">
+                                            <el-input v-model="formData.studentScore"></el-input>
+                                        </el-form-item>
+
+                                        <div>
+                                            <el-button type="warning" v-on:click="dialogVisible=false">返回</el-button>
+                                            <el-button type="primary" v-on:click="upStudent()">确定</el-button>
+                                        </div>
+                                    </el-form>
+                                </el-dialog>
+
+                                <el-dialog :append-to-body="true" :visible.sync="dialogVisible2" title="添加信息" width="30%">
+                                    <el-form>
+                                        <el-form-item label="id">
+                                            <el-input v-model="formData.id" disabled="false"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="学号">
+                                            <el-input v-model="formData.studentNo"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="姓名">
+                                            <el-input v-model="formData.studentName"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="课程名">
+                                            <el-input v-model="formData.courseName"></el-input>
+                                            <!--                                        这里写死-->
+                                        </el-form-item>
+                                        <el-form-item label="成绩">
+                                            <el-input v-model="formData.studentScore"></el-input>
+                                        </el-form-item>
+
+
+                                        <div>
+                                            <el-button type="warning" v-on:click="dialogVisible2=false">返回</el-button>
+                                            <el-button type="primary" v-on:click="addUser()">确定</el-button>
+                                        </div>
+                                    </el-form>
+                                </el-dialog>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column
+                                align="right">
+                            <template slot="header">
+                                <el-button
+                                        type="success"
+                                        v-on:click="dialogVisible2=true"
+                                >添加
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                            background
+                            :page-size="page.pageSize"
+                            layout="prev, pager, next,total"
+                            @current-change="listPageLoard"
+                            :total="page.pageTotal"
+                            :page-count="page.pageTotal"
+                            style="float: right ; margin: 10px"
+                    >
+                    </el-pagination>
+                </el-card>
+
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+
+
+<script type="application/javascript">
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            dialogVisible2:false,
+            dialogVisible:false,
+            isCollapse: false,
+            value: '',
+            form:[],
+            formData:{
+                id:null,
+                studentNo:null,
+                studentName:null,
+                studentScore:null,
+                courseName:null,
+
+            },
+            page:{
+                pageNum:null,
+                pageTotal:null,
+                pageSize:null,
+            },
+            start:1
+
+        },
+        methods: {
+            listPageLoard:function (page){
+                this.page.pageNum=page;
+                axios.get("/getAchievementPage",{params: {start:page}})
+                    .then(res=>{
+                        this.form=res.data
+                    })
+            },
+            delStudent:function (){
+
+            },
+
+            editUse:function(row){
+                this.dialogVisible=true;
+                this.formData.id=row.id;
+                this.formData.studentNo    =row.studentNo
+                this.formData.studentName  =row.studentName
+                this.formData.studentScore =row.studentScore
+                this.formData.courseName   =row.courseName
+
+                console.log(row.id)
+            },
+            upStudent:function (){
+                axios.post("/upStudengt",this.formData).then(res=>{
+                    if (res.data){
+                        this.listPageLoard(1);
+                        this.dialogVisible=false;
+                    }
+                    else {
+                        this.$notify({
+                            title: '警告',
+                            message: '出错了',
+                            type: 'warning'
+                        });
+                        this.dialogVisible=false;
+
+                    }
+                })
+            }
+
+
+
+        },
+        created(){
+            axios.post("/getInitAchevementPage").then(res=>{
+                this.page=res.data;
+            })
+
+
+            axios.get("/getAchievementPage",{params:{
+                    start:1
+                }}).then(res=>{
+                console.log(res.data);
+                this.form=res.data
+
+
+            })
+        }
+    });
+</script>
+</body>
+</html>

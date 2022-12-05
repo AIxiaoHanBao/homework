@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>通用</title>
+    <div id="userBaseJs">
+        <script src="/js/vue.js"></script>
+        <script src="/js/axios.min.js"></script>
+        <link rel="stylesheet" href="/css/index.css">
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.js"></script>
+        <!-- 引入样式 -->
+        <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
+        <!-- 引入组件库 -->
+        <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+        <style>
+            #subHead:focus {
+                background-color: #545c64;
+            }
+            #logOut{
+                text-decoration: none;
+                color:inherit;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #f0f2f5
+            }
+            .el-header {
+                background-color: #B3C0D1;
+                color: #333;
+                line-height: 55px;
+                padding: 0;
+                box-sizing: border-box;
+                -ms-flex-negative: 0;
+                flex-shrink: 0;
+            }
+            html,
+            body,
+            #root,
+            .el-container {
+                height: 100%;
+            }
+            .el-aside::-webkit-scrollbar {
+                display: none;
+                color: #333;
+
+            }
+
+            a{
+                text-decoration:none;
+                color:inherit;
+            }
+
+        </style>
+
+    </div>
+
+
+</head>
+<body>
+
+<div id="Aside">
+
+    <el-menu :default-openeds="['1', '3']">
+        <el-submenu index="1">
+            <template slot="title"><i class="el-icon-message"></i>学生管理</template>
+            <el-menu-item-group>
+                <a th:href="@{/admin}"><el-menu-item index="1-1" >学生</el-menu-item></a>
+            </el-menu-item-group>
+            <el-submenu index="2">
+                <template slot="title"><i class="el-icon-menu"></i>成绩管理</template>
+                <el-menu-item-group>
+                    <a th:href="@{/toStudent}"><el-menu-item index="2-1">成绩</el-menu-item></a>
+                </el-menu-item-group>
+            </el-submenu>
+        </el-submenu>
+    </el-menu>
+
+</div>
+
+<script type="application/javascript">
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            isCollapse: false,
+            value: ''
+        },
+        methods: {
+        },
+    });
+</script>
+
+</body>
+</html>
