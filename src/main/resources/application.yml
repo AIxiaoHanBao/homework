@@ -1,4 +1,4 @@
-spring:
+Xspring:
   mvc:
     hiddenmethod:
       filter:

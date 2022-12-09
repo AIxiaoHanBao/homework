@@ -72,13 +72,13 @@
                         >
                             <template slot-scope="scope">
                                 <el-button
-                                        v-on:click="editUse(scope.row)"
+                                        v-on:click="editUse1(scope.row)"
                                 >
                                     编辑
                                 </el-button>
 
                                 <el-button
-                                        v-on:click="delUser(scope.row.user_id,scope.$index)"
+                                        v-on:click="delUser(scope.row)"
                                         type="danger"
                                         v-bind:name=scope.$index
                                 >
@@ -87,6 +87,9 @@
                                 <el-dialog :append-to-body="true" :visible.sync="dialogVisible" title="修改信息" width="20%">
                                     <el-form>
 
+                                        <el-form-item  prop="id" label="id" width="140">
+                                            <el-input v-model="formData.id"></el-input>
+                                        </el-form-item >
                                         <el-form-item label="学号">
                                             <el-input v-model="formData.studentNo"></el-input>
                                         </el-form-item>
@@ -113,13 +116,16 @@
 
                                         <div>
                                             <el-button type="warning" v-on:click="dialogVisible=false">返回</el-button>
-                                            <el-button type="primary" v-on:click="updataUser()">确定</el-button>
+                                            <el-button type="primary" v-on:click="upUser()">确定</el-button>
                                         </div>
                                     </el-form>
                                 </el-dialog>
 
                                 <el-dialog :append-to-body="true" :visible.sync="dialogVisible2" title="添加信息" width="30%">
                                     <el-form>
+                                        <el-form-item  prop="id" label="id" width="140">
+                                            <el-input v-model="formData.id"></el-input>
+                                        </el-form-item >
                                         <el-form-item label="学号">
                                             <el-input v-model="formData.studentNo"></el-input>
                                         </el-form-item>
@@ -147,7 +153,7 @@
 
                                         <div>
                                             <el-button type="warning" v-on:click="dialogVisible2=false">返回</el-button>
-                                            <el-button type="primary" v-on:click="addUser()">确定</el-button>
+                                            <el-button type="primary" v-on:click="inUser()">确定</el-button>
                                         </div>
                                     </el-form>
                                 </el-dialog>
@@ -220,6 +226,90 @@
                         this.form=res.data
                 })
             },
+            editUse1:function (row){
+                console.log(row)
+                this.formData.id=row.id
+                this.formData.studentNo=row.studentNo
+                this.formData.studentName=row.studentName
+                this.formData.studentSex=row.studentSex
+                this.formData.studentStartYea=row.studentStartYea
+                this.formData.studentEndYear=row.studentEndYear
+                this.formData.studentNation=row.studentNation
+                this.formData.studentCollege=row.studentCollege
+                this.formData.studentMajor=row.studentMajor
+                this.formData.studentTyp=row.studentTyp
+                this.dialogVisible=true
+            },
+            upUser:function (){
+                axios.post("/upStudengt",this.formData).then(res=>{
+                    if (res.data){
+                        this.$notify({
+                            title: '成功',
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        this.listPageLoard(1);
+                        this.dialogVisible=false
+                    }
+                    else{
+                        this.$notify({
+                            title: '警告',
+                            message: '发生什么事了',
+                            type: 'warning'
+                        });
+                        this.dialogVisible=false
+                    }
+                })
+            },
+            delUser:function (row){
+                axios.get("/delStudent",{params:{id:row.id}})
+                    .then(res=>{
+                        if (res.data){
+                            this.$notify({
+                                title: '成功',
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            this.listPageLoard(1);
+                            this.reloadPage();
+                        }
+                        else{
+                            this.$notify({
+                                title: '警告',
+                                message: '发生什么事了',
+                                type: 'warning'
+                            });
+                        }
+
+                })
+            },
+            inUser:function (){
+                axios.post("/inStudent",this.formData).then(res=>{
+                    if (res.data){
+                        this.$notify({
+                            title: '成功',
+                            message: '加入成功',
+                            type: 'success'
+                        });
+                        this.listPageLoard(1);
+                        this.reloadPage();
+                        this.dialogVisible2=false
+                    }else{
+                        this.$notify({
+                            title: '警告',
+                            message: '出问题了',
+                            type: 'warning'
+                        });
+                        this.dialogVisible2=false
+                    }
+                })
+            },
+            reloadPage:function (){
+                axios.post("/getInitPage").then(res=>{
+                    this.page=res.data;
+                })
+            }
+
 
 
         },

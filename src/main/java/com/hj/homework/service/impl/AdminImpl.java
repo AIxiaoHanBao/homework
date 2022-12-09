@@ -140,8 +140,8 @@ public class AdminImpl implements AdminServie {
     }
 
     @Override
-    public boolean delStudent(Student student) {
-        int i = studentMapper.deleteById(student.getId());
+    public boolean delStudent(Integer id) {
+        int i = studentMapper.deleteById(id);
         return i>0?true:false;
     }
 
@@ -152,8 +152,8 @@ public class AdminImpl implements AdminServie {
     }
 
     @Override
-    public boolean delAchievement(Achievement achievement) {
-        int i = achievementMapper.deleteById(achievement.getId());
+    public boolean delAchievement(Integer id) {
+        int i = achievementMapper.deleteById(id);
         return i>0?true:false;
     }
 }

@@ -73,10 +73,10 @@ public interface AdminServie {
 
     /**
      * 删除学生
-     * @param student
+     * @param id
      * @return
      */
-    boolean delStudent(Student student);
+    boolean delStudent(Integer id);
 
     /**
      * 录入成绩
@@ -87,10 +87,10 @@ public interface AdminServie {
 
     /**
      * 删除成绩
-     * @param achievement
+     * @param
      * @return
      */
-    boolean delAchievement(Achievement achievement);
+    boolean delAchievement(Integer id);
 
 
 }

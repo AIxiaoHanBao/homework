@@ -63,7 +63,7 @@
                                 </el-button>
 
                                 <el-button
-                                        v-on:click="delUser(scope.row.user_id,scope.$index)"
+                                        v-on:click="delStudent(scope.row)"
                                         type="danger"
                                         v-bind:name=scope.$index
                                 >
@@ -94,46 +94,9 @@
                                         </div>
                                     </el-form>
                                 </el-dialog>
-
-                                <el-dialog :append-to-body="true" :visible.sync="dialogVisible2" title="添加信息" width="30%">
-                                    <el-form>
-                                        <el-form-item label="id">
-                                            <el-input v-model="formData.id" disabled="false"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="学号">
-                                            <el-input v-model="formData.studentNo"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="姓名">
-                                            <el-input v-model="formData.studentName"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="课程名">
-                                            <el-input v-model="formData.courseName"></el-input>
-                                            <!--                                        这里写死-->
-                                        </el-form-item>
-                                        <el-form-item label="成绩">
-                                            <el-input v-model="formData.studentScore"></el-input>
-                                        </el-form-item>
-
-
-                                        <div>
-                                            <el-button type="warning" v-on:click="dialogVisible2=false">返回</el-button>
-                                            <el-button type="primary" v-on:click="addUser()">确定</el-button>
-                                        </div>
-                                    </el-form>
-                                </el-dialog>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                                align="right">
-                            <template slot="header">
-                                <el-button
-                                        type="success"
-                                        v-on:click="dialogVisible2=true"
-                                >添加
-                                </el-button>
-                            </template>
-                        </el-table-column>
                     </el-table>
 
                     <el-pagination
@@ -187,22 +150,41 @@
                         this.form=res.data
                     })
             },
-            delStudent:function (){
-
+            delStudent:function (row){
+                axios.get("/delAchievement",{params:{
+                    id:row.id}}).then(res=>{
+                    if (res.data){
+                        this.$notify({
+                            title: '成功',
+                            message: '删除',
+                            type: 'success'
+                        });
+                        this.listPageLoard(1);
+                        this.reloadPage();
+                        this.dialogVisible=false;
+                    }
+                    else{
+                        this.$notify({
+                            title: '警告',
+                            message: '发生什么事了',
+                            type: 'warning'
+                        });
+                        this.dialogVisible=false;
+                    }
+                })
             },
 
             editUse:function(row){
-                this.dialogVisible=true;
-                this.formData.id=row.id;
-                this.formData.studentNo    =row.studentNo
-                this.formData.studentName  =row.studentName
-                this.formData.studentScore =row.studentScore
-                this.formData.courseName   =row.courseName
-
+                this.dialogVisible = true;
+                this.formData.id = row.id;;
+                this.formData.studentNo = row.studentNo;
+                this.formData.studentName = row.studentName;
+                this.formData.studentScore = row.studentScore;
+                this.formData.courseName  = row.courseName;
                 console.log(row.id)
             },
             upStudent:function (){
-                axios.post("/upStudengt",this.formData).then(res=>{
+                axios.post("/upAchievement",this.formData).then(res=>{
                     if (res.data){
                         this.listPageLoard(1);
                         this.dialogVisible=false;
@@ -216,6 +198,22 @@
                         this.dialogVisible=false;
 
                     }
+                })
+            },
+
+
+
+
+
+
+
+
+
+
+
+            reloadPage:function (){
+                axios.post("/getInitAchevementPage").then(res=>{
+                    this.page=res.data;
                 })
             }
 

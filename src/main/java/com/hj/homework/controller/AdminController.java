@@ -80,10 +80,10 @@ public class AdminController {
         return adminServie.addStudent(student);
     }
 
-    @PostMapping("/delStudent")
+    @GetMapping("/delStudent")
     @ResponseBody
-    public boolean delStudent(@RequestBody Student student){
-        return adminServie.delStudent(student);
+    public boolean delStudent( Integer id){
+        return adminServie.delStudent(id);
     }
 
     @PostMapping("/upAchievement")
@@ -92,10 +92,10 @@ public class AdminController {
         return adminServie.upAchievement(achievement);
     }
 
-    @PostMapping("/delAchievement")
+    @GetMapping("/delAchievement")
     @ResponseBody
-    public boolean delAchievement(@RequestBody Achievement achievement){
-        return adminServie.delAchievement(achievement);
+    public boolean delAchievement( Integer id){
+        return adminServie.delAchievement(id);
     }
 
 
